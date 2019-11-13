@@ -20,8 +20,8 @@ defmodule ParkingWeb.UserController do
 
   def create(conn, %{"user" => user_params}) do
     with {:ok, %User{} = user} <- UserManager.create_user(user_params),
-         {:ok, token, _claims} <- Parking.Guardian.encode_and_sign(user) do
-      conn |> render("jwt.json", jwt: token)
+         {:ok, _, _claims} <- Parking.Guardian.encode_and_sign(user) do
+      conn |> render("sign_up.json", user: user_params)
     end
   end
 
