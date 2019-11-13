@@ -26,6 +26,7 @@ defmodule ParkingWeb.Router do
 
     post "/", ParkingController, :create
     get "/", ParkingController, :index
+    get "/nearest", ParkingController, :nearest
     get "/:id", ParkingController, :show
     put "/:id", ParkingController, :update
     delete "/:id", ParkingController, :delete
