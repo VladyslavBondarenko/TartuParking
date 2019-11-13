@@ -2,6 +2,8 @@ use Mix.Config
 
 # Configure your database
 import_config "dev.secret.exs"
+# contant example /config/dev.secret.exs
+#
 # config :parking, Parking.Repo,
 #   username: "postgres",
 #   password: "postgres",
@@ -9,6 +11,8 @@ import_config "dev.secret.exs"
 #   hostname: "localhost",
 #   show_sensitive_data_on_connection_error: true,
 #   pool_size: 10
+# System.put_env("ROUTES_APP_ID","sY36oPVDGCb5mLxaZtDe")
+# System.put_env("ROUTES_APP_CODE","T11Y0-P_aav2ndKVL0mZ4A")
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
