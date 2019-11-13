@@ -4,6 +4,7 @@ defmodule Parking.ParkingManager.Parking do
 
   schema "parkings" do
     field :location, :string
+    field :timelimit, :integer, default: 0
 
     timestamps()
   end
@@ -11,7 +12,7 @@ defmodule Parking.ParkingManager.Parking do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:location])
+    |> cast(attrs, [:location, :timelimit])
     |> validate_required([:location])
     |> unique_constraint(:location)
   end
