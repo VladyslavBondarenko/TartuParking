@@ -5,14 +5,22 @@ defmodule ParkingWeb.ParkingControllerTest do
   alias Parking.ParkingManager.Parking
 
   @create_attrs %{
-    location: "58.378609, 26.738889",
+    location: "58.387746,26.696940", timelimit: 0
+  }
+  @create_attrs2 %{
+    location: "58.389229,26.705184", timelimit: 0
+  }
+  @create_attrs3 %{
+    location: "58.382548,26.709504", timelimit: 0
   }
   @update_attrs %{
-    location: "58.378605, 26.739101"
+    location: "58.378605,26.739101", timelimit: 0
   }
   @invalid_attrs %{location: nil}
 
   def fixture(:parking) do
+    ParkingManager.create_parking(@create_attrs2)
+    ParkingManager.create_parking(@create_attrs3)
     {:ok, parking} = ParkingManager.create_parking(@create_attrs)
     parking
   end
@@ -35,7 +43,8 @@ defmodule ParkingWeb.ParkingControllerTest do
       conn = get(conn, Routes.parking_path(conn, :show, id))
       assert %{
               "id" => id,
-              "location" => "58.378609, 26.738889"
+              "location" => "58.387746,26.696940",
+              "timelimit" => 0
             } = json_response(conn, 200)["data"]
     end
     test "renders errors when data is invalid", %{conn: conn} do
@@ -55,7 +64,8 @@ defmodule ParkingWeb.ParkingControllerTest do
 
       assert %{
         "id" => id,
-        "location" => "58.378605, 26.739101"
+        "location" => "58.378605,26.739101",
+        "timelimit" => 0
       } = json_response(conn, 200)["data"]
     end
 
@@ -78,8 +88,33 @@ defmodule ParkingWeb.ParkingControllerTest do
     end
   end
 
+  describe "find nearest parking" do
+    setup [:create_parking]
+
+    test "parking itself is the nearest parking to it's location", %{conn: conn, parking: %Parking{id: id, location: location}} do
+      conn = get(conn, Routes.parking_path(conn, :nearest), location: location)
+      assert %{
+        "id" => id,
+        "location" => "58.387746,26.696940",
+        "timelimit" => 0
+      } = json_response(conn, 200)["data"]
+    end
+
+    test "closest among 3 different parkings", %{conn: conn, parking: %Parking{id: id, location: location}} do
+      conn = get(conn, Routes.parking_path(conn, :nearest), location: "58.386668,26.697528")
+      assert %{
+        "id" => id,
+        "location" => "58.387746,26.696940",
+        "timelimit" => 0
+      } = json_response(conn, 200)["data"]
+    end
+
+  end
+
   defp create_parking(_) do
     parking = fixture(:parking)
     {:ok, parking: parking}
   end
+
+
 end
