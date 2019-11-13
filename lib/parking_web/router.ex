@@ -1,8 +1,13 @@
 defmodule ParkingWeb.Router do
   use ParkingWeb, :router
+  alias Parking.Guardian
 
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  pipeline :jwt_authenticated do
+    plug Guardian.AuthPipeline
   end
 
   scope "/api", ParkingWeb do
@@ -13,7 +18,7 @@ defmodule ParkingWeb.Router do
   end
 
   scope "/api/users", ParkingWeb do
-    pipe_through :api
+    pipe_through [:api, :jwt_authenticated]
 
     get "/", UserController, :index
     get "/:id", UserController, :show
@@ -22,7 +27,7 @@ defmodule ParkingWeb.Router do
   end
 
   scope "/api/parkings", ParkingWeb do
-    pipe_through :api
+    pipe_through [:api, :jwt_authenticated]
 
     post "/", ParkingController, :create
     get "/", ParkingController, :index

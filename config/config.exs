@@ -29,6 +29,9 @@ config :phoenix, :json_library, Jason
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
 
-config :parking, Parking.Guardian,
-  issuer: "parking",
-  secret_key: "bMEGE/M3Rnu1K1dg8yIk1kcga0dpURyk0xMgzRxwUIvQ1L9skvhBVtWhhLAlzOVV"
+import_config "auth_config.secret.exs"
+# Example guardian config, put it in auth_config.secret.exs
+
+# config :parking, Parking.Guardian,
+#   issuer: "parking",
+#   secret_key: "hTY/00Y2V5EWlm3P8fj9spnYQ6uoe9UuYALHNuYtvMepN1MzlUkFnPbbIvb3rahv" # generate secret key with `mix guardian.gen.secret`
