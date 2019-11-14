@@ -3,6 +3,7 @@ defmodule ParkingWeb.Router do
   alias Parking.Guardian
 
   pipeline :api do
+    plug CORSPlug, origin: "*"
     plug :accepts, ["json"]
   end
 

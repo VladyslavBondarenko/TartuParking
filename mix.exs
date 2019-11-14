@@ -44,7 +44,8 @@ defmodule Parking.MixProject do
       {:comeonin, "~> 4.0"},
       {:guardian, "~> 1.2"},
       {:httpoison, "~> 1.6"},
-      {:poison, "~> 3.1"}
+      {:poison, "~> 3.1"},
+      {:cors_plug, "~> 2.0"}
     ]
   end
 
