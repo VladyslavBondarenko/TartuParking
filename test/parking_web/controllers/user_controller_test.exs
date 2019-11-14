@@ -5,10 +5,12 @@ defmodule ParkingWeb.UserControllerTest do
   alias Parking.UserManager.User
 
   @create_attrs %{
+    full_name: "some username",
     username: "some username",
     password: "some password"
   }
   @update_attrs %{
+    full_name: "some updated username",
     username: "some updated username",
     password: "some updated password"
   }
@@ -20,21 +22,25 @@ defmodule ParkingWeb.UserControllerTest do
   end
 
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    {_, jwt, _} = UserManager.token_sign_in("ivan","123");
+    conn =
+      conn
+      |> put_req_header("accept", "application/json")
+      |> put_req_header("authorization", "Bearer #{jwt}")
+    {:ok, conn: conn}
   end
 
   describe "index" do
     test "lists all users", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index))
-      assert json_response(conn, 200)["data"] == []
+      assert [%{"full_name" => "", "id" => 1, "username" => "ivan"}] = json_response(conn, 200)["users"]
     end
   end
 
   describe "create user" do
     test "renders user when data is valid", %{conn: conn} do
       conn = post(conn, Routes.user_path(conn, :create), user: @create_attrs)
-      assert %{"jwt" => jwt} = json_response(conn, 200)
-      assert String.length(jwt) > 0
+      assert %{"full_name" => "some username", "username" => "some username"} = json_response(conn, 200)
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -48,14 +54,9 @@ defmodule ParkingWeb.UserControllerTest do
 
     test "renders user when data is valid", %{conn: conn, user: %User{id: id}} do
       conn = put(conn, Routes.user_path(conn, :update, id), user: @update_attrs)
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
-
+      assert %{"id" => ^id} = json_response(conn, 200)
       conn = get(conn, Routes.user_path(conn, :show, id))
-
-      assert %{
-        "id" => id,
-        "username" => "some updated username"
-      } = json_response(conn, 200)["data"]
+      assert %{"full_name" => "some updated username", "id" => id, "username" => "some updated username"} = json_response(conn, 200)
     end
 
     test "renders errors when data is invalid", %{conn: conn, user: user} do

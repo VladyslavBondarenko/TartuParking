@@ -3,7 +3,7 @@ defmodule Parking.Repo.Migrations.CreateUsers do
 
   def change do
     create table(:users) do
-      add :full_name, :string
+      add :full_name, :string, default: ""
       add :username, :string
       add :password, :string
 
