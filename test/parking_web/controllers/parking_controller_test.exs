@@ -112,6 +112,18 @@ defmodule ParkingWeb.ParkingControllerTest do
         "timelimit" => 0
       } = json_response(conn, 200)
     end
+
+    # neares parking should be found by the shortest car path to it, not by shortest geo-distance
+    # in this test nearest by distance is closer, but path to it is longer, because this parking is on another riverside
+    test "nearest by path, not by location", %{conn: conn} do
+      ParkingManager.create_parking(%{location: "58.378390,26.738600", timelimit: 0}) # nearest by path
+      ParkingManager.create_parking(%{location: "58.375391,26.736067", timelimit: 0}) # nearest by distance
+      conn = get(conn, Routes.parking_path(conn, :nearest), location: "58.375644,26.739925") # target location
+      assert %{
+        "location" => "58.378390,26.738600", #location of nearest by path
+        "timelimit" => 0
+      } = json_response(conn, 200)
+    end
   end
 
   defp create_parking(_) do
