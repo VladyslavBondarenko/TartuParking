@@ -17,8 +17,11 @@ defmodule ParkingWeb.ParkingController do
     end
   end
 
-  def nearest(conn, %{"location" => location}) do
+  # def nearest(conn, %{"location" => location, "limit" => limit}) do
+  def nearest(conn, params) do
     parkings = ParkingManager.list_parkings()
+    limitDefault = 3
+    limit = if params["limit"] != nil, do: String.to_integer(params["limit"]), else: limitDefault
     if List.first(parkings) != nil do
       address = "https://route.api.here.com/routing/7.2/calculateroute.json"
       distances = Enum.map(parkings, fn(parking) ->
@@ -26,7 +29,7 @@ defmodule ParkingWeb.ParkingController do
           app_id: System.get_env("ROUTES_APP_ID"),
           app_code: System.get_env("ROUTES_APP_CODE"),
           mode: "fastest;car;traffic:disabled",
-          waypoint0: location,
+          waypoint0: params["location"],
           waypoint1: parking.location
         }
         path = "#{address}?#{URI.encode_query(query)}"
@@ -35,9 +38,10 @@ defmodule ParkingWeb.ParkingController do
         distance = List.first(result["response"]["route"])["summary"]["distance"]
         %{id: parking.id, distance: distance}
       end);
-      min = Enum.min_by(distances, fn(x) -> x.distance end)
-      nearestParking = ParkingManager.get_parking!(min.id)
-      render(conn, "show.json", parking: nearestParking)
+      sortedDistances = Enum.sort_by(distances, &(&1.distance))
+      nearestId = Enum.take(sortedDistances, limit)
+      nearestParkings = Enum.map(nearestId, fn(item) -> ParkingManager.get_parking!(item.id) end)
+      render(conn, "index.json", parkings: nearestParkings)
     end
   end
 
