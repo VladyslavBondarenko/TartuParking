@@ -8,12 +8,16 @@ defmodule ParkingWeb.ParkingControllerTest do
   @create_attrs %{ location: "58.387746,26.696940", timelimit: 0 }
   @create_attrs2 %{ location: "58.389229,26.705184", timelimit: 0 }
   @create_attrs3 %{ location: "58.382548,26.709504", timelimit: 0 }
+  @nearest_by_path %{location: "58.378390,26.738600", timelimit: 0}
+  @nearest_by_distance %{location: "58.375391,26.736067", timelimit: 0}
   @update_attrs %{ location: "58.378605,26.739101", timelimit: 0 }
   @invalid_attrs %{location: nil}
 
   def fixture(:parking) do
     ParkingManager.create_parking(@create_attrs2)
     ParkingManager.create_parking(@create_attrs3)
+    ParkingManager.create_parking(@nearest_by_path)
+    ParkingManager.create_parking(@nearest_by_distance)
     {:ok, parking} = ParkingManager.create_parking(@create_attrs)
     parking
   end
@@ -92,24 +96,36 @@ defmodule ParkingWeb.ParkingControllerTest do
     test "parking itself is the nearest parking to it's location", %{conn: conn, parking: parking} do
       conn = get(conn, Routes.parking_path(conn, :nearest), location: parking.location)
       assert %{
-        "location" => "58.387746,26.696940",
-        "timelimit" => 0
+        "parkings" => [
+          %{
+            "location" => "58.387746,26.696940",
+            "timelimit" => 0
+          },
+          %{
+            "location" => "58.389229,26.705184",
+            "timelimit" => 0
+          },
+          %{
+            "location" => "58.382548,26.709504",
+            "timelimit" => 0
+          }
+        ]
       } = json_response(conn, 200)
     end
 
-    test "nearest among 3 different parkings", %{conn: conn} do
-      conn = get(conn, Routes.parking_path(conn, :nearest), location: "58.386668,26.697528")
+    test "nearest with limit", %{conn: conn} do
+      conn = get(conn, Routes.parking_path(conn, :nearest), location: "58.386668,26.697528", limit: "2")
       assert %{
-        "location" => "58.387746,26.696940",
-        "timelimit" => 0
-      } = json_response(conn, 200)
-    end
-
-    test "1nearest among 3 different parkings", %{conn: conn} do
-      conn = get(conn, Routes.parking_path(conn, :nearest), location: "58.386668,26.697528")
-      assert %{
-        "location" => "58.387746,26.696940",
-        "timelimit" => 0
+        "parkings" => [
+          %{
+            "location" => "58.387746,26.696940",
+            "timelimit" => 0
+          },
+          %{
+            "location" => "58.389229,26.705184",
+            "timelimit" => 0
+          }
+        ]
       } = json_response(conn, 200)
     end
 
@@ -118,10 +134,14 @@ defmodule ParkingWeb.ParkingControllerTest do
     test "nearest by path, not by location", %{conn: conn} do
       ParkingManager.create_parking(%{location: "58.378390,26.738600", timelimit: 0}) # nearest by path
       ParkingManager.create_parking(%{location: "58.375391,26.736067", timelimit: 0}) # nearest by distance
-      conn = get(conn, Routes.parking_path(conn, :nearest), location: "58.375644,26.739925") # target location
+      conn = get(conn, Routes.parking_path(conn, :nearest), location: "58.375644,26.739925", limit: "1") # target location
       assert %{
-        "location" => "58.378390,26.738600", #location of nearest by path
-        "timelimit" => 0
+        "parkings" => [
+          %{
+            "location" => "58.378390,26.738600",
+            "timelimit" => 0
+          }
+        ]
       } = json_response(conn, 200)
     end
   end

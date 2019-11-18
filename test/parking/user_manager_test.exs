@@ -21,7 +21,7 @@ defmodule Parking.UserManagerTest do
 
     test "list_users/0 returns all users" do
       user = user_fixture()
-      default_user = UserManager.get_user!(1) #created with seeds before running tests to be used for authorization
+      UserManager.get_user!(1) #created with seeds before running tests to be used for authorization
       assert UserManager.list_users() == [UserManager.get_user!(1), user]
     end
 
