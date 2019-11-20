@@ -54,10 +54,5 @@ defmodule Parking.ParkingManagerTest do
       assert {:ok, %Parking{}} = ParkingManager.delete_parking(parking)
       assert_raise Ecto.NoResultsError, fn -> ParkingManager.get_parking!(parking.id) end
     end
-
-    test "change_parking/1 returns a parking changeset" do
-      parking = parking_fixture()
-      assert %Ecto.Changeset{} = ParkingManager.change_parking(parking)
-    end
   end
 end

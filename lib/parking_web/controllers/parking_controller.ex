@@ -1,8 +1,7 @@
 defmodule ParkingWeb.ParkingController do
   use ParkingWeb, :controller
 
-  alias Parking.ParkingManager
-  alias Parking.ParkingManager.Parking
+  alias Parking.{ParkingManager, ParkingManager.Parking, Gelolocation}
 
   action_fallback ParkingWeb.FallbackController
 
@@ -23,21 +22,7 @@ defmodule ParkingWeb.ParkingController do
     limitDefault = 3
     limit = if params["limit"] != nil, do: String.to_integer(params["limit"]), else: limitDefault
     if List.first(parkings) != nil do
-      address = "https://route.api.here.com/routing/7.2/calculateroute.json"
-      distances = Enum.map(parkings, fn(parking) ->
-        query = %{
-          app_id: System.get_env("ROUTES_APP_ID"),
-          app_code: System.get_env("ROUTES_APP_CODE"),
-          mode: "fastest;car;traffic:disabled",
-          waypoint0: params["location"],
-          waypoint1: parking.location
-        }
-        path = "#{address}?#{URI.encode_query(query)}"
-        response = HTTPoison.get! path
-        result = Poison.decode!(response.body)
-        distance = List.first(result["response"]["route"])["summary"]["distance"]
-        %{id: parking.id, distance: distance}
-      end);
+      distances = Enum.map(parkings, fn(parking) -> %{id: parking.id, distance: Gelolocation.distance(params["location"], parking.location)} end);
       sortedDistances = Enum.sort_by(distances, &(&1.distance))
       nearestId = Enum.take(sortedDistances, limit)
       nearestParkings = Enum.map(nearestId, fn(item) -> ParkingManager.get_parking!(item.id) end)
