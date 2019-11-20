@@ -27,8 +27,4 @@ defmodule Parking.ParkingManager do
     Repo.delete(parking)
   end
 
-  def change_parking(%Parking{} = parking) do
-    Parking.changeset(parking, %{})
-  end
-
 end
