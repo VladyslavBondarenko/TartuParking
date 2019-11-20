@@ -27,8 +27,4 @@ defmodule Parking.StreetManager do
     Repo.delete(street)
   end
 
-  def change_street(%Street{} = street) do
-    Street.changeset(street, %{})
-  end
-
 end

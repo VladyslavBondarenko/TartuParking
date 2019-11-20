@@ -1,7 +1,7 @@
 defmodule ParkingWeb.ParkingController do
   use ParkingWeb, :controller
 
-  alias Parking.{ParkingManager, ParkingManager.Parking, Gelolocation}
+  alias Parking.{ParkingManager, ParkingManager.Parking, Geolocation}
 
   action_fallback ParkingWeb.FallbackController
 
@@ -22,7 +22,7 @@ defmodule ParkingWeb.ParkingController do
     limitDefault = 3
     limit = if params["limit"] != nil, do: String.to_integer(params["limit"]), else: limitDefault
     if List.first(parkings) != nil do
-      distances = Enum.map(parkings, fn(parking) -> %{id: parking.id, distance: Gelolocation.distance(params["location"], parking.location)} end);
+      distances = Enum.map(parkings, fn(parking) -> %{id: parking.id, distance: Geolocation.distance(params["location"], parking.location)} end);
       sortedDistances = Enum.sort_by(distances, &(&1.distance))
       nearestId = Enum.take(sortedDistances, limit)
       nearestParkings = Enum.map(nearestId, fn(item) -> ParkingManager.get_parking!(item.id) end)
