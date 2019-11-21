@@ -45,7 +45,9 @@ defmodule Parking.MixProject do
       {:guardian, "~> 1.2"},
       {:httpoison, "~> 1.6"},
       {:poison, "~> 3.1"},
-      {:cors_plug, "~> 2.0"}
+      {:cors_plug, "~> 2.0"},
+      {:geo, "~> 3.3.2"},
+      {:geo_partition, "~> 0.1.1"}
     ]
   end
 

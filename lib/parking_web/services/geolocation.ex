@@ -27,4 +27,10 @@ defmodule Parking.Geolocation do
     List.first(List.first(result["Response"]["View"])["Result"])["Location"]["Address"]["Street"]
   end
 
+  def isLocationInArea(location, area) do
+    areaPolygon = %Geo.Polygon{coordinates: [area |> String.split(" ") |> Enum.map(fn e -> e |> String.split(",") |> Enum.map(fn e -> e |> String.to_float() end) |> List.to_tuple() end)], srid: 4326}
+    locationPoint = location |> String.split(",") |> Enum.map(fn e -> e |> String.to_float() end) |> List.to_tuple()
+    GeoPartition.Topo.contains? areaPolygon, locationPoint
+  end
+
 end
