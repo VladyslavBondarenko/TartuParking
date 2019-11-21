@@ -6,6 +6,7 @@ defmodule Parking.Repo.Migrations.CreateParkings do
       add :location, :string
       add :timelimit, :integer
       add :area, :text
+      add :capacity, :integer
 
       timestamps()
     end
