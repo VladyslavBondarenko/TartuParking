@@ -33,28 +33,29 @@ defmodule ParkingWeb.BookingController do
       with {:ok, %Booking{} = booking} <- BookingManager.create_booking(user.id, booking_params) do
         if (streetName != nil) do
           streetInfo = StreetManager.get_street_zone_info(streetName)
-          position = %{
-            positionType: "street",
-            location: booking_params["location"],
-            startDateTime: booking.startDateTime,
-            endDateTime: booking.endDateTime,
-            id: booking.id,
-            hourPayment: streetInfo.zone.hourPayment,
-            realTimePayment: streetInfo.zone.realTimePayment,
-          }
-          render(conn, "position.json", position: position)
-        else
-          position = %{
-            positionType: "outOfPaidZone",
-            location: booking_params["location"],
-            startDateTime: booking.startDateTime,
-            endDateTime: booking.endDateTime,
-            id: booking.id,
-            hourPayment: 0,
-            realTimePayment: 0,
-          }
-          render(conn, "position.json", position: position)
+          if (streetInfo != nil) do
+            position = %{
+              positionType: "street",
+              location: booking_params["location"],
+              startDateTime: booking.startDateTime,
+              endDateTime: booking.endDateTime,
+              id: booking.id,
+              hourPayment: streetInfo.zone.hourPayment,
+              realTimePayment: streetInfo.zone.realTimePayment,
+            }
+            render(conn, "position.json", position: position)
+          end
         end
+        position = %{
+          positionType: "outOfPaidZone",
+          location: booking_params["location"],
+          startDateTime: booking.startDateTime,
+          endDateTime: booking.endDateTime,
+          id: booking.id,
+          hourPayment: 0,
+          realTimePayment: 0,
+        }
+        render(conn, "position.json", position: position)
       end
     end
   end
