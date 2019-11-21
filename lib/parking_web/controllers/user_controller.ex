@@ -2,7 +2,7 @@ defmodule ParkingWeb.UserController do
   use ParkingWeb, :controller
 
   alias Parking.UserManager
-  alias Parking.UserManager.User
+  alias Parking.User
 
   action_fallback ParkingWeb.FallbackController
 

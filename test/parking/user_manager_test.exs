@@ -4,7 +4,7 @@ defmodule Parking.UserManagerTest do
   alias Parking.UserManager
 
   describe "users" do
-    alias Parking.UserManager.User
+    alias Parking.User
 
     @valid_attrs %{username: "some username", password: "some password"}
     @update_attrs %{username: "some updated username", password: "some updated password"}

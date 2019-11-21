@@ -1,4 +1,4 @@
-defmodule Parking.ParkingManager.Parking do
+defmodule Parking.Parking do
   use Ecto.Schema
   import Ecto.Changeset
 

@@ -3,7 +3,7 @@ defmodule Parking.ParkingManager do
   import Ecto.Query, warn: false
   alias Parking.Repo
 
-  alias Parking.ParkingManager.Parking
+  alias Parking.Parking
 
   def list_parkings do
     Repo.all(Parking)

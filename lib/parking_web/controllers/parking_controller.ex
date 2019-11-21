@@ -1,7 +1,7 @@
 defmodule ParkingWeb.ParkingController do
   use ParkingWeb, :controller
 
-  alias Parking.{ParkingManager, ParkingManager.Parking, Geolocation}
+  alias Parking.{ParkingManager, Parking, Geolocation}
 
   action_fallback ParkingWeb.FallbackController
 

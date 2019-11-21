@@ -2,7 +2,7 @@ defmodule ParkingWeb.UserControllerTest do
   use ParkingWeb.ConnCase
 
   alias Parking.UserManager
-  alias Parking.UserManager.User
+  alias Parking.User
 
   @create_attrs %{
     full_name: "some username",

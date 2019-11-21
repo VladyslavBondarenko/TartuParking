@@ -6,7 +6,7 @@ defmodule Parking.UserManager do
   import Ecto.Query, warn: false
   alias Parking.Repo
 
-  alias Parking.UserManager.User
+  alias Parking.User
 
   @doc """
   Returns the list of users.

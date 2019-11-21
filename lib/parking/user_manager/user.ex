@@ -1,4 +1,4 @@
-defmodule Parking.UserManager.User do
+defmodule Parking.User do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -6,6 +6,7 @@ defmodule Parking.UserManager.User do
     field :full_name, :string, default: ""
     field :username, :string
     field :password, :string
+    has_many :bookings, Parking.Booking
 
     timestamps()
   end
