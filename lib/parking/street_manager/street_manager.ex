@@ -3,13 +3,17 @@ defmodule Parking.StreetManager do
   import Ecto.Query, warn: false
   alias Parking.Repo
 
-  alias Parking.Street
+  alias Parking.{Street, Zone}
 
   def list_streets do
     Repo.all(Street)
   end
 
   def get_street!(id), do: Repo.get!(Street, id)
+
+  def get_street_zone_info(name) do
+    (from s in Street, where: s.name == ^name, join: z in Zone, on: s.zone_id == z.id) |> Repo.one |> Repo.preload([:zone])
+  end
 
   def create_street(attrs \\ %{}) do
     %Street{}
