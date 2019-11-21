@@ -5,12 +5,12 @@ defmodule ParkingWeb.ParkingControllerTest do
   alias Parking.UserManager
   alias Parking.ParkingManager.Parking
 
-  @create_attrs %{ location: "58.387746,26.696940", timelimit: 0 }
-  @create_attrs2 %{ location: "58.389229,26.705184", timelimit: 0 }
-  @create_attrs3 %{ location: "58.382548,26.709504", timelimit: 0 }
-  @nearest_by_path %{location: "58.378390,26.738600", timelimit: 0}
-  @nearest_by_distance %{location: "58.375391,26.736067", timelimit: 0}
-  @update_attrs %{ location: "58.378605,26.739101", timelimit: 0 }
+  @create_attrs %{location: "58.387746,26.696940", timelimit: 0, area: "58.38811045707349,26.697406020617336 58.38760994822571,26.696209755396694 58.387022263039675,26.69730409667477 58.387601512622474,26.698371615862698"}
+  @create_attrs2 %{location: "58.379579,26.708482", timelimit: 0, area: "58.37976392189816,26.70835325396729 58.379589546902395,26.70809576190186 58.37939829591593,26.70855710185242 58.379592359409166,26.70881995833588"}
+  @create_attrs3 %{location: "58.382548,26.709504", timelimit: 0, area: "58.38273009407792,26.70879321461109 58.3822857547534,26.709758809856453 58.38238137254904,26.709962657741585 58.38281446167178,26.708943418315926"}
+  @nearest_by_path %{location: "58.378390,26.738600", timelimit: 0, area: "58.37843010866203,26.738337120747474 58.37807571936761,26.73843904469004 58.37845260944946,26.739291987156776"}
+  @nearest_by_distance %{location: "58.375391,26.736067", timelimit: 0, area: "58.37555082370519,26.73658919121317 58.375221721192396,26.73431467796854 58.374642268281995,26.735285637631932 58.375221721192396, 26.736685750737706"}
+  @update_attrs %{location: "58.375073,26.704905", timelimit: 0, area: "58.375187675534306,26.70429053980945 58.37475449277052,26.704848439284547 58.374968271941995,26.705663830825074 58.37539582639919,26.704880625792725"}
   @invalid_attrs %{location: nil}
 
   def fixture(:parking) do
@@ -66,7 +66,7 @@ defmodule ParkingWeb.ParkingControllerTest do
 
       assert %{
         "id" => id,
-        "location" => "58.378605,26.739101",
+        "location" => "58.375073,26.704905",
         "timelimit" => 0
       } = json_response(conn, 200)
     end
@@ -102,11 +102,11 @@ defmodule ParkingWeb.ParkingControllerTest do
             "timelimit" => 0
           },
           %{
-            "location" => "58.389229,26.705184",
+            "location" => "58.382548,26.709504",
             "timelimit" => 0
           },
           %{
-            "location" => "58.382548,26.709504",
+            "location" => "58.379579,26.708482",
             "timelimit" => 0
           }
         ]
@@ -122,7 +122,7 @@ defmodule ParkingWeb.ParkingControllerTest do
             "timelimit" => 0
           },
           %{
-            "location" => "58.389229,26.705184",
+            "location" => "58.382548,26.709504",
             "timelimit" => 0
           }
         ]
@@ -132,8 +132,6 @@ defmodule ParkingWeb.ParkingControllerTest do
     # neares parking should be found by the shortest car path to it, not by shortest geo-distance
     # in this test nearest by distance is closer, but path to it is longer, because this parking is on another riverside
     test "nearest by path, not by location", %{conn: conn} do
-      ParkingManager.create_parking(%{location: "58.378390,26.738600", timelimit: 0}) # nearest by path
-      ParkingManager.create_parking(%{location: "58.375391,26.736067", timelimit: 0}) # nearest by distance
       conn = get(conn, Routes.parking_path(conn, :nearest), location: "58.375644,26.739925", limit: "1") # target location
       assert %{
         "parkings" => [
