@@ -11,11 +11,7 @@ defmodule Parking.ParkingManagerTest do
     @invalid_attrs %{location: nil}
 
     def parking_fixture(attrs \\ %{}) do
-      {:ok, parking} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> ParkingManager.create_parking()
-      parking
+      ParkingManager.get_parking!(1)
     end
 
     test "list_parkings/0 returns all parkings" do

@@ -34,7 +34,13 @@ defmodule ParkingWeb.ParkingControllerTest do
   describe "index" do
     test "lists all parkings", %{conn: conn} do
       conn = get(conn, Routes.parking_path(conn, :index))
-      assert json_response(conn, 200)["parkings"] == []
+      assert [
+        %{
+          "id" => 1,
+          "location" => "58.382548,26.709504",
+          "timelimit" => 0
+        }
+      ] = json_response(conn, 200)["parkings"]
     end
   end
 
@@ -106,7 +112,7 @@ defmodule ParkingWeb.ParkingControllerTest do
             "timelimit" => 0
           },
           %{
-            "location" => "58.379579,26.708482",
+            "location" => "58.382548,26.709504",
             "timelimit" => 0
           }
         ]
