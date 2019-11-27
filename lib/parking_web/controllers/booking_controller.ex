@@ -6,7 +6,8 @@ defmodule ParkingWeb.BookingController do
   action_fallback ParkingWeb.FallbackController
 
   def index(conn, _params) do
-    bookings = BookingManager.list_bookings()
+    user = Guardian.Plug.current_resource(conn)
+    bookings = BookingManager.list_user_bookings(user.id)
     render(conn, "index.json", bookings: bookings)
   end
 

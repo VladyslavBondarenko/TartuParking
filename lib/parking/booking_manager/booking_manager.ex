@@ -7,6 +7,10 @@ defmodule Parking.BookingManager do
     Repo.all(Booking) |> Repo.preload([:zone])
   end
 
+  def list_user_bookings(user_id) do
+    (from b in Booking, where: b.user_id == ^user_id) |> Repo.all |> Repo.preload([:zone])
+  end
+
   @spec get_booking!(any) :: nil | [%{optional(atom) => any}] | %{optional(atom) => any}
   def get_booking!(id), do: Repo.get!(Booking, id) |> Repo.preload([:zone])
 
