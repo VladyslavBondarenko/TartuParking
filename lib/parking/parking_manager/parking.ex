@@ -7,6 +7,7 @@ defmodule Parking.Parking do
     field :timelimit, :integer, default: 0
     field :area, :string
     field :capacity, :integer, default: 20
+    belongs_to :zone, Parking.Zone
 
     timestamps()
   end

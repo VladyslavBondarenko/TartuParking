@@ -10,12 +10,18 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias Parking.{Repo, UserManager, ParkingManager, Street, Zone}
+alias Parking.{Repo, UserManager, Zone}
 
 # seed customers
 [%{username: "ivan", password: "123"},
  %{username: "andrey", password: "123"}]
 |> Enum.map(fn user_data -> UserManager.create_user(user_data) end)
+
+# seed zones
+zoneP = Repo.insert!(%Zone{name: "pedestrian", hourPayment: 0.0, realTimePayment: 0.0, freeFirstMinutes: 0})
+zoneA = Repo.insert!(%Zone{name: "A", hourPayment: 2.0, realTimePayment: 0.16, freeFirstMinutes: 15})
+zoneB = Repo.insert!(%Zone{name: "B", hourPayment: 1.0, realTimePayment: 0.08, freeFirstMinutes: 90})
+zoneF = Repo.insert!(%Zone{name: "free", hourPayment: 0.0, realTimePayment: 0.0, freeFirstMinutes: 0})
 
 # seed parkings
 [%{capacity:  20, location: "58.387746,26.696940", timelimit: 0, area: "58.38811045707349,26.697406020617336 58.38760994822571,26.696209755396694 58.387022263039675,26.69730409667477 58.387601512622474,26.698371615862698"},
@@ -44,12 +50,7 @@ alias Parking.{Repo, UserManager, ParkingManager, Street, Zone}
  %{capacity:  20, location: "58.379342,26.734488", timelimit: 0, area: "58.37940647287469,26.734157805869245 58.378888965126734,26.73506439251628 58.37830394722655,26.73504829926219 58.37830394722655,26.736389403769635 58.37868646002839,26.736357217261457 58.37946834829294,26.7362392000648 58.37972991136202,26.73506439251628"},
  %{capacity:  20, location: "58.375328,26.736195", timelimit: 0, area: "58.37555513663468,26.736602695770216 58.37523728557938,26.736693890876722 58.37467471032093,26.73511943418498 58.374851922495104,26.734666140861464 58.37522603416215,26.734312089271498"}
 ]
-|> Enum.map(fn parking_data -> ParkingManager.create_parking(parking_data) end)
-
-# seed zones
-zoneP = Repo.insert!(%Zone{name: "pedestrian", hourPayment: 0.0, realTimePayment: 0.0})
-zoneA = Repo.insert!(%Zone{name: "A", hourPayment: 2.0, realTimePayment: 0.16})
-zoneB = Repo.insert!(%Zone{name: "B", hourPayment: 1.0, realTimePayment: 0.08})
+|> Enum.map(fn data -> Repo.insert!(Ecto.build_assoc(zoneF, :parkings, data)) end)
 
 # seed streets
 streetsZoneP = [
