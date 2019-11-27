@@ -7,6 +7,7 @@ defmodule Parking.Booking do
     field :endDateTime, :utc_datetime
     field :location, :string
     belongs_to :user, Parking.User
+    belongs_to :zone, Parking.Zone
 
     timestamps()
   end
