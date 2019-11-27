@@ -6,10 +6,6 @@ defmodule ParkingWeb.BookingView do
     %{bookings: render_many(bookings, BookingView, "booking.json")}
   end
 
-  def render("show.json", %{booking: booking}) do
-    render_one(booking, BookingView, "booking.json")
-  end
-
   def render("booking.json", %{booking: booking}) do
     %{id: booking.id,
       location: booking.location,
@@ -22,4 +18,12 @@ defmodule ParkingWeb.BookingView do
       cost: booking.cost
     }
   end
+
+  def render("zone.json", %{zone: zone}) do
+    %{hourPayment: zone.hourPayment,
+      realTimePayment: zone.realTimePayment,
+      freeFirstMinutes: zone.freeFirstMinutes,
+    }
+  end
+
 end

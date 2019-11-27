@@ -42,7 +42,7 @@ defmodule ParkingWeb.Router do
     pipe_through [:api, :jwt_authenticated]
 
     post "/", BookingController, :create
-    get "/", BookingController, :index
+    get "/prices", BookingController, :prices
     get "/actual", BookingController, :actual
     put "/:id", BookingController, :update
     delete "/:id", BookingController, :delete

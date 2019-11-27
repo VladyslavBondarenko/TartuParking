@@ -13,31 +13,31 @@ defmodule ParkingWeb.BookingController do
 
   def create(conn, %{"booking" => booking_params}) do
     user = Guardian.Plug.current_resource(conn)
+    zone = identifyZone(booking_params["location"])
+    with {:ok, %Booking{} = booking} <- BookingManager.create_booking(user.id, zone.id, booking_params) do
+      booking = BookingManager.get_booking!(booking.id)
+      render(conn, "booking.json", booking: booking)
+    end
+  end
+
+  defp identifyZone(location) do
     parkings = ParkingManager.list_parkings()
-    isAtParking = Enum.map(parkings, fn(parking) -> %{parking_id: parking.id, isHere: Geolocation.isLocationInArea(booking_params["location"], parking.area)} end) |> Enum.filter(fn x -> x.isHere end)
-    if (isAtParking != []) do
-      selectedParking = ParkingManager.get_parking!(List.first(isAtParking).parking_id)
-      with {:ok, %Booking{} = booking} <- BookingManager.create_booking(user.id, selectedParking.zone.id, booking_params) do
-        booking = BookingManager.get_booking!(booking.id)
-        render(conn, "booking.json", booking: booking)
-      end
-    else
-      streetName = Geolocation.getStreetByLocation(booking_params["location"])
-      if (streetName != nil) do
-        streetInfo = StreetManager.get_street_zone_info(streetName)
-        if (streetInfo != nil) do
-          with {:ok, %Booking{} = booking} <- BookingManager.create_booking(user.id, streetInfo.zone.id, booking_params) do
-            booking = BookingManager.get_booking!(booking.id)
-            render(conn, "booking.json", booking: booking)
-          end
+    isAtParking = Enum.map(parkings, fn(parking) -> %{parking_id: parking.id, isHere: Geolocation.isLocationInArea(location, parking.area)} end) |> Enum.filter(fn x -> x.isHere end)
+    case isAtParking do
+      [] -> case Geolocation.getStreetByLocation(location) do
+        nil -> ZoneManager.get_zone_by_name("free")
+        streetName -> case StreetManager.get_street_zone_info(streetName) do
+          nil -> ZoneManager.get_zone_by_name("free")
+          streetInfo -> streetInfo.zone
         end
       end
-      freeZone = ZoneManager.get_zone_by_name("free")
-      with {:ok, %Booking{} = booking} <- BookingManager.create_booking(user.id, freeZone.id, booking_params) do
-        booking = BookingManager.get_booking!(booking.id)
-        render(conn, "booking.json", booking: booking)
-      end
+      arr -> ParkingManager.get_parking!(List.first(arr).parking_id).zone
     end
+  end
+
+  def prices(conn, %{"location" => location}) do
+    zone = identifyZone(location)
+    render(conn, "zone.json", zone: zone)
   end
 
   def actual(conn, _params) do
