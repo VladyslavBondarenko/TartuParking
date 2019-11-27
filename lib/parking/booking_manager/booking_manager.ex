@@ -14,7 +14,9 @@ defmodule Parking.BookingManager do
   @spec get_booking!(any) :: nil | [%{optional(atom) => any}] | %{optional(atom) => any}
   def get_booking!(id), do: Repo.get!(Booking, id) |> Repo.preload([:zone])
 
-  def get_actual(user_id), do: Repo.all from b in Booking, where: b.user_id == ^user_id and is_nil(b.endDateTime)
+  def get_actual(user_id) do
+    (from b in Booking, where: b.user_id == ^user_id and is_nil(b.endDateTime)) |> Repo.all |> Repo.preload([:zone])
+  end
 
   def create_booking(user_id, zone_id, attrs \\ %{}) do
     %Booking{user_id: user_id, zone_id: zone_id}
