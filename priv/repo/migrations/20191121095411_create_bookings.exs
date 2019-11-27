@@ -6,6 +6,8 @@ defmodule Parking.Repo.Migrations.CreateBookings do
       add :startDateTime, :timestamp
       add :endDateTime, :timestamp
       add :location, :string
+      add :type, :string
+      add :cost, :float
       add :user_id, references(:users)
       add :zone_id, references(:zones)
 

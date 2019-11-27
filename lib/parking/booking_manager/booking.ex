@@ -6,6 +6,8 @@ defmodule Parking.Booking do
     field :startDateTime, :utc_datetime
     field :endDateTime, :utc_datetime
     field :location, :string
+    field :type, :string
+    field :cost, :float
     belongs_to :user, Parking.User
     belongs_to :zone, Parking.Zone
 
@@ -15,6 +17,6 @@ defmodule Parking.Booking do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:startDateTime, :endDateTime, :location])
+    |> cast(attrs, [:startDateTime, :endDateTime, :location, :type, :cost])
   end
 end
