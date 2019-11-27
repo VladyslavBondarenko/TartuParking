@@ -17,7 +17,9 @@ defmodule ParkingWeb.BookingView do
       endDateTime: booking.endDateTime,
       hourPayment: booking.zone.hourPayment,
       realTimePayment: booking.zone.realTimePayment,
-      freeFirstMinutes: booking.zone.freeFirstMinutes
+      freeFirstMinutes: booking.zone.freeFirstMinutes,
+      type: booking.type,
+      cost: booking.cost
     }
   end
 end
