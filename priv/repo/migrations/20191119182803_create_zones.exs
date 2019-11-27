@@ -6,6 +6,8 @@ defmodule Parking.Repo.Migrations.AddZones do
       add :name, :string
       add :hourPayment, :float
       add :realTimePayment, :float
+      add :freeFirstMinutes, :integer
+
       timestamps()
     end
     create unique_index(:zones, [:name])

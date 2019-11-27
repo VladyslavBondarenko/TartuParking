@@ -6,7 +6,10 @@ defmodule Parking.Zone do
     field :name, :string
     field :hourPayment, :float
     field :realTimePayment, :float
+    field :freeFirstMinutes, :integer
+    has_many :parkings, Parking.Parking
     has_many :streets, Parking.Street
+    has_many :bookings, Parking.Booking
 
     timestamps()
   end
@@ -14,8 +17,8 @@ defmodule Parking.Zone do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :hourPayment, :realTimePayment])
-    |> validate_required([:name, :hourPayment, :realTimePayment])
+    |> cast(attrs, [:name, :hourPayment, :realTimePayment, :freeFirstMinutes])
+    |> validate_required([:name, :hourPayment, :realTimePayment, :freeFirstMinutes])
     |> unique_constraint(:name)
   end
 end
