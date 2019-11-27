@@ -6,10 +6,10 @@ defmodule Parking.ParkingManager do
   alias Parking.Parking
 
   def list_parkings do
-    Repo.all(Parking)
+    Repo.all(Parking) |> Repo.preload([:zone])
   end
 
-  def get_parking!(id), do: Repo.get!(Parking, id)
+  def get_parking!(id), do: Repo.get!(Parking, id) |> Repo.preload([:zone])
 
   def create_parking(attrs \\ %{}) do
     %Parking{}

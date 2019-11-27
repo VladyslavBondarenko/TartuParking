@@ -13,6 +13,10 @@ defmodule ParkingWeb.ParkingView do
   def render("parking.json", %{parking: parking}) do
     %{id: parking.id,
       location: parking.location,
-      timelimit: parking.timelimit}
+      timelimit: parking.timelimit,
+      capacity: parking.capacity,
+      hourPayment: parking.zone.hourPayment,
+      realTimePayment: parking.zone.realTimePayment,
+      freeFirstMinutes: parking.zone.freeFirstMinutes}
   end
 end
