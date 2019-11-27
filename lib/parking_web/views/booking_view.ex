@@ -14,17 +14,10 @@ defmodule ParkingWeb.BookingView do
     %{id: booking.id,
       location: booking.location,
       startDateTime: booking.startDateTime,
-      endDateTime: booking.endDateTime}
-  end
-
-  def render("position.json", %{position: position}) do
-    %{positionType: position.positionType,
-      id: position.id,
-      location: position.location,
-      startDateTime: position.startDateTime,
-      endDateTime: position.endDateTime,
-      hourPayment: position.hourPayment,
-      realTimePayment: position.realTimePayment
+      endDateTime: booking.endDateTime,
+      hourPayment: booking.zone.hourPayment,
+      realTimePayment: booking.zone.realTimePayment,
+      freeFirstMinutes: booking.zone.freeFirstMinutes
     }
   end
 end

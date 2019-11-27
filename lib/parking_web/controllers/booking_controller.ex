@@ -1,7 +1,7 @@
 defmodule ParkingWeb.BookingController do
   use ParkingWeb, :controller
 
-  alias Parking.{BookingManager, ParkingManager, Booking, Geolocation, StreetManager}
+  alias Parking.{BookingManager, ParkingManager, Booking, Geolocation, StreetManager, ZoneManager}
 
   action_fallback ParkingWeb.FallbackController
 
@@ -15,47 +15,26 @@ defmodule ParkingWeb.BookingController do
     parkings = ParkingManager.list_parkings()
     isAtParking = Enum.map(parkings, fn(parking) -> %{parking_id: parking.id, isHere: Geolocation.isLocationInArea(booking_params["location"], parking.area)} end) |> Enum.filter(fn x -> x.isHere end)
     if (isAtParking != []) do
-      parkingId = List.first(isAtParking).parking_id
-      with {:ok, %Booking{} = booking} <- BookingManager.create_booking(user.id, booking_params) do
-        position = %{
-          positionType: "parking",
-          location: booking_params["location"],
-          startDateTime: booking_params["startDateTime"],
-          endDateTime: booking.endDateTime,
-          id: booking.id,
-          hourPayment: 0,
-          realTimePayment: 0,
-        }
-        render(conn, "position.json", position: position)
+      selectedParking = ParkingManager.get_parking!(List.first(isAtParking).parking_id)
+      with {:ok, %Booking{} = booking} <- BookingManager.create_booking(user.id, selectedParking.zone.id, booking_params) do
+        booking = BookingManager.get_booking!(booking.id)
+        render(conn, "booking.json", booking: booking)
       end
     else
       streetName = Geolocation.getStreetByLocation(booking_params["location"])
-      with {:ok, %Booking{} = booking} <- BookingManager.create_booking(user.id, booking_params) do
-        if (streetName != nil) do
-          streetInfo = StreetManager.get_street_zone_info(streetName)
-          if (streetInfo != nil) do
-            position = %{
-              positionType: "street",
-              location: booking_params["location"],
-              startDateTime: booking.startDateTime,
-              endDateTime: booking.endDateTime,
-              id: booking.id,
-              hourPayment: streetInfo.zone.hourPayment,
-              realTimePayment: streetInfo.zone.realTimePayment,
-            }
-            render(conn, "position.json", position: position)
+      if (streetName != nil) do
+        streetInfo = StreetManager.get_street_zone_info(streetName)
+        if (streetInfo != nil) do
+          with {:ok, %Booking{} = booking} <- BookingManager.create_booking(user.id, streetInfo.zone.id, booking_params) do
+            booking = BookingManager.get_booking!(booking.id)
+            render(conn, "booking.json", booking: booking)
           end
         end
-        position = %{
-          positionType: "outOfPaidZone",
-          location: booking_params["location"],
-          startDateTime: booking.startDateTime,
-          endDateTime: booking.endDateTime,
-          id: booking.id,
-          hourPayment: 0,
-          realTimePayment: 0,
-        }
-        render(conn, "position.json", position: position)
+      end
+      freeZone = ZoneManager.get_zone_by_name("free")
+      with {:ok, %Booking{} = booking} <- BookingManager.create_booking(user.id, freeZone.id, booking_params) do
+        booking = BookingManager.get_booking!(booking.id)
+        render(conn, "booking.json", booking: booking)
       end
     end
   end

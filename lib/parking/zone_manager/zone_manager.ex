@@ -11,6 +11,10 @@ defmodule Parking.ZoneManager do
 
   def get_zone!(id), do: Repo.get!(Zone, id)
 
+  def get_zone_by_name(name) do
+    (from z in Zone, where: z.name == ^name) |> Repo.one
+  end
+
   def create_zone(attrs \\ %{}) do
     %Zone{}
     |> Zone.changeset(attrs)
