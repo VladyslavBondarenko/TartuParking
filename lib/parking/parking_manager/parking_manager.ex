@@ -12,7 +12,7 @@ defmodule Parking.ParkingManager do
   def get_parking!(id), do: Repo.get!(Parking, id) |> Repo.preload([:zone])
 
   def create_parking(attrs \\ %{}) do
-    %Parking{}
+    %Parking{zone_id: attrs["zone_id"]}
     |> Parking.changeset(attrs)
     |> Repo.insert()
   end
