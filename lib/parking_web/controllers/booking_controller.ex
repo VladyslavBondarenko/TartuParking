@@ -20,7 +20,7 @@ defmodule ParkingWeb.BookingController do
     end
   end
 
-  defp identifyZone(location) do
+  def identifyZone(location) do
     parkings = ParkingManager.list_parkings()
     isAtParking = Enum.map(parkings, fn(parking) -> %{parking_id: parking.id, isHere: Geolocation.isLocationInArea(location, parking.area)} end) |> Enum.filter(fn x -> x.isHere end)
     case isAtParking do
@@ -50,7 +50,7 @@ defmodule ParkingWeb.BookingController do
     booking = BookingManager.get_booking!(id)
 
     with {:ok, %Booking{} = booking} <- BookingManager.update_booking(booking, booking_params) do
-      render(conn, "show.json", booking: booking)
+      render(conn, "booking.json", booking: booking)
     end
   end
 

@@ -27,14 +27,14 @@ defmodule ParkingWeb.UserController do
 
   def show(conn, %{"id" => id}) do
     user = UserManager.get_user!(id)
-    render(conn, "show.json", user: user)
+    render(conn, "user.json", user: user)
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
     user = UserManager.get_user!(id)
 
     with {:ok, %User{} = user} <- UserManager.update_user(user, user_params) do
-      render(conn, "show.json", user: user)
+      render(conn, "user.json", user: user)
     end
   end
 
