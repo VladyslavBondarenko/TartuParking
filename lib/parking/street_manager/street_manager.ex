@@ -6,10 +6,10 @@ defmodule Parking.StreetManager do
   alias Parking.{Street, Zone}
 
   def list_streets do
-    Repo.all(Street)
+    Repo.all(Street) |> Repo.preload([:zone])
   end
 
-  def get_street!(id), do: Repo.get!(Street, id)
+  def get_street!(id), do: Repo.get!(Street, id) |> Repo.preload([:zone])
 
   def get_street_zone_info(name) do
     (from s in Street, where: s.name == ^name, join: z in Zone, on: s.zone_id == z.id) |> Repo.one |> Repo.preload([:zone])

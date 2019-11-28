@@ -38,6 +38,12 @@ defmodule ParkingWeb.Router do
     delete "/:id", ParkingController, :delete
   end
 
+  scope "/api/streets", ParkingWeb do
+    pipe_through [:api, :jwt_authenticated]
+
+    get "/", StreetController, :index
+  end
+
   scope "/api/bookings", ParkingWeb do
     pipe_through [:api, :jwt_authenticated]
 
