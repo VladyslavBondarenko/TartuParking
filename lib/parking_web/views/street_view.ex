@@ -9,6 +9,7 @@ defmodule ParkingWeb.StreetView do
   def render("street.json", %{street: street}) do
     %{id: street.id,
       name: street.name,
+      capacity: street.capacity,
       hourPayment: street.zone.hourPayment,
       realTimePayment: street.zone.realTimePayment,
       freeFirstMinutes: street.zone.freeFirstMinutes}
