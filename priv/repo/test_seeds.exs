@@ -31,11 +31,11 @@ zoneF = Repo.insert!(%Zone{name: "free", hourPayment: 0.0, realTimePayment: 0.0,
 
 # seed streets
 streetsZoneA = [
- %{name: "Lossi"},
- %{name: "Vabaduse puiestee"}
+ %{name: "Lossi", capacity: 20},
+ %{name: "Vabaduse puiestee", capacity: 60}
 ]
 streetsZoneB = [
- %{name: "Vanemuise"},
+ %{name: "Vanemuise", capacity:  100},
 ]
 
 streetsZoneA |> Enum.map(fn data -> Repo.insert!(Ecto.build_assoc(zoneA, :streets, data)) end)
