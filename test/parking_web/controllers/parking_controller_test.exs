@@ -22,6 +22,7 @@ defmodule ParkingWeb.ParkingControllerTest do
       assert [
         %{
           "capacity" => 20,
+          "emptySpaces" => 20,
           "freeFirstMinutes" => 0,
           "hourPayment" => 0.0,
           "location" => "58.387746,26.696940",
@@ -30,6 +31,7 @@ defmodule ParkingWeb.ParkingControllerTest do
         },
         %{
           "capacity" => 20,
+          "emptySpaces" => 20,
           "freeFirstMinutes" => 0,
           "hourPayment" => 0.0,
           "location" => "58.379579,26.708482",
@@ -38,6 +40,7 @@ defmodule ParkingWeb.ParkingControllerTest do
         },
         %{
           "capacity" => 20,
+          "emptySpaces" => 20,
           "freeFirstMinutes" => 0,
           "hourPayment" => 0.0,
           "location" => "58.382548,26.709504",
@@ -46,6 +49,7 @@ defmodule ParkingWeb.ParkingControllerTest do
         },
         %{
           "capacity" => 20,
+          "emptySpaces" => 20,
           "freeFirstMinutes" => 0,
           "hourPayment" => 0.0,
           "location" => "58.378390,26.738600",
@@ -54,6 +58,7 @@ defmodule ParkingWeb.ParkingControllerTest do
         },
         %{
           "capacity" => 20,
+          "emptySpaces" => 20,
           "freeFirstMinutes" => 0,
           "hourPayment" => 0.0,
           "location" => "58.375391,26.736067",

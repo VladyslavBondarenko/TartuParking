@@ -15,7 +15,7 @@ defmodule Parking.BookingManager do
   def get_booking!(id), do: Repo.get!(Booking, id) |> Repo.preload([:street, :parking, street: :zone, parking: :zone])
 
   def get_actual(user_id) do
-    (from b in Booking, where: b.user_id == ^user_id and is_nil(b.endDateTime)) |> Repo.all |> Repo.preload([:zone])
+    (from b in Booking, where: b.user_id == ^user_id and is_nil(b.endDateTime)) |> Repo.all |> Repo.preload([:street, :parking, street: :zone, parking: :zone])
   end
 
   def create_booking(user_id, parkingInfo, attrs \\ %{}) do
