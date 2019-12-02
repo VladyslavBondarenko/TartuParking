@@ -28,7 +28,7 @@ defmodule Parking.ParkingManager do
   end
 
   def calc_busy_spaces(parking_id) do
-    (from b in Booking, where: b.parking_id == ^parking_id, select: count(b.id)) |> Repo.one
+    (from b in Booking, where: b.parking_id == ^parking_id, where: is_nil(b.endDateTime), select: count(b.id)) |> Repo.one
   end
 
 end

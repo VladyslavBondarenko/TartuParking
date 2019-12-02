@@ -32,7 +32,7 @@ defmodule Parking.StreetManager do
   end
 
   def calc_busy_spaces(street_id) do
-    (from b in Booking, where: b.street_id == ^street_id, select: count(b.id)) |> Repo.one
+    (from b in Booking, where: b.street_id == ^street_id, where: is_nil(b.endDateTime), select: count(b.id)) |> Repo.one
   end
 
 end

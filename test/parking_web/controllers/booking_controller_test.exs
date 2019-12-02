@@ -178,17 +178,23 @@ defmodule ParkingWeb.BookingControllerTest do
     test "parking empty spaces number decrease after creating booking", %{conn: conn} do
       conn = get(conn, Routes.parking_path(conn, :show, 3))
       assert %{ "emptySpaces" => 19 } = json_response(conn, 200)
-      BookingManager.create_booking(1, %{ parkingType: "parking", parkingItem: ParkingManager.get_parking!(3) }, @create_attrs_parking)
+      {:ok, booking} = BookingManager.create_booking(1, %{ parkingType: "parking", parkingItem: ParkingManager.get_parking!(3) }, @create_attrs_parking)
       conn = get(conn, Routes.parking_path(conn, :show, 3))
       assert %{ "emptySpaces" => 18 } = json_response(conn, 200)
+      put(conn, Routes.booking_path(conn, :update, booking.id), booking: @update_attrs)
+      conn = get(conn, Routes.parking_path(conn, :show, 3))
+      assert %{ "emptySpaces" => 19 } = json_response(conn, 200)
     end
 
     test "street empty spaces number decrease after creating booking", %{conn: conn} do
       conn = get(conn, Routes.street_path(conn, :show, 2))
       assert %{ "emptySpaces" => 60 } = json_response(conn, 200)
-      BookingManager.create_booking(1, %{ parkingType: "street", parkingItem: StreetManager.get_street!(2) }, @create_attrs_zone_A)
+      {:ok, booking} = BookingManager.create_booking(1, %{ parkingType: "street", parkingItem: StreetManager.get_street!(2) }, @create_attrs_zone_A)
       conn = get(conn, Routes.street_path(conn, :show, 2))
       assert %{ "emptySpaces" => 59 } = json_response(conn, 200)
+      put(conn, Routes.booking_path(conn, :update, booking.id), booking: @update_attrs)
+      conn = get(conn, Routes.street_path(conn, :show, 2))
+      assert %{ "emptySpaces" => 60 } = json_response(conn, 200)
     end
 
   end
