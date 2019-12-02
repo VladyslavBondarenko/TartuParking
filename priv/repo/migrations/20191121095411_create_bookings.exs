@@ -8,8 +8,10 @@ defmodule Parking.Repo.Migrations.CreateBookings do
       add :location, :string
       add :type, :string
       add :cost, :float
+      add :parkingType, :string
+      add :parking_id, references(:parkings)
+      add :street_id, references(:streets)
       add :user_id, references(:users)
-      add :zone_id, references(:zones)
 
       timestamps()
     end

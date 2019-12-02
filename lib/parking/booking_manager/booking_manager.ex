@@ -8,19 +8,31 @@ defmodule Parking.BookingManager do
   end
 
   def list_user_bookings(user_id) do
-    (from b in Booking, where: b.user_id == ^user_id) |> Repo.all |> Repo.preload([:zone])
+    (from b in Booking, where: b.user_id == ^user_id) |> Repo.all |> Repo.preload([:street, :parking, street: :zone, parking: :zone])
   end
 
   @spec get_booking!(any) :: nil | [%{optional(atom) => any}] | %{optional(atom) => any}
-  def get_booking!(id), do: Repo.get!(Booking, id) |> Repo.preload([:zone])
+  def get_booking!(id), do: Repo.get!(Booking, id) |> Repo.preload([:street, :parking, street: :zone, parking: :zone])
 
   def get_actual(user_id) do
     (from b in Booking, where: b.user_id == ^user_id and is_nil(b.endDateTime)) |> Repo.all |> Repo.preload([:zone])
   end
 
-  def create_booking(user_id, zone_id, attrs \\ %{}) do
-    cost = calcCost(attrs["startDateTime"], attrs["endDateTime"], attrs["type"], zone_id)
-    %Booking{user_id: user_id, zone_id: zone_id, cost: cost}
+  def create_booking(user_id, parkingInfo, attrs \\ %{}) do
+    zone = case parkingInfo.parkingItem do
+      nil -> ZoneManager.get_zone_by_name("free")
+      parkingItem -> parkingItem.zone
+    end
+    cost = calcCost(attrs["startDateTime"], attrs["endDateTime"], attrs["type"], zone)
+    parking_id = case parkingInfo.parkingType do
+      "parking" -> parkingInfo.parkingItem.id
+      _ -> nil
+    end
+    street_id = case parkingInfo.parkingType do
+      "street" -> parkingInfo.parkingItem.id
+      _ -> nil
+    end
+    %Booking{user_id: user_id, parkingType: parkingInfo.parkingType, parking_id: parking_id, street_id: street_id, cost: cost}
     |> Booking.changeset(attrs)
     |> Repo.insert()
   end
@@ -37,9 +49,8 @@ defmodule Parking.BookingManager do
     Repo.delete(booking)
   end
 
-  defp calcCost(start, finish, type, zone_id) do
+  defp calcCost(start, finish, type, zone) do
     if (!is_nil(finish)) do
-      zone = ZoneManager.get_zone!(zone_id)
       {_,start,_} = DateTime.from_iso8601(start)
       {_,finish,_} = DateTime.from_iso8601(finish)
       payMin = DateTime.diff(finish, start) / 60 - zone.freeFirstMinutes
