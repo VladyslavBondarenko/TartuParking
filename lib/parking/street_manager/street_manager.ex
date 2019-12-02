@@ -3,7 +3,7 @@ defmodule Parking.StreetManager do
   import Ecto.Query, warn: false
   alias Parking.Repo
 
-  alias Parking.{Street, Zone}
+  alias Parking.{Street, Zone, Booking}
 
   def list_streets do
     Repo.all(Street) |> Repo.preload([:zone])
@@ -11,8 +11,8 @@ defmodule Parking.StreetManager do
 
   def get_street!(id), do: Repo.get!(Street, id) |> Repo.preload([:zone])
 
-  def get_street_zone_info(name) do
-    (from s in Street, where: s.name == ^name, join: z in Zone, on: s.zone_id == z.id) |> Repo.one |> Repo.preload([:zone])
+  def get_street_by_name(name) do
+    (from s in Street, where: s.name == ^name) |> Repo.one |> Repo.preload([:zone])
   end
 
   def create_street(attrs \\ %{}) do
@@ -29,6 +29,10 @@ defmodule Parking.StreetManager do
 
   def delete_street(%Street{} = street) do
     Repo.delete(street)
+  end
+
+  def calc_busy_spaces(street_id) do
+    (from b in Booking, where: b.street_id == ^street_id, select: count(b.id)) |> Repo.one
   end
 
 end

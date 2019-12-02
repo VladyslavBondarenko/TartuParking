@@ -3,7 +3,7 @@ defmodule Parking.ParkingManager do
   import Ecto.Query, warn: false
   alias Parking.Repo
 
-  alias Parking.Parking
+  alias Parking.{Parking, Booking}
 
   def list_parkings do
     Repo.all(Parking) |> Repo.preload([:zone])
@@ -25,6 +25,10 @@ defmodule Parking.ParkingManager do
 
   def delete_parking(%Parking{} = parking) do
     Repo.delete(parking)
+  end
+
+  def calc_busy_spaces(parking_id) do
+    (from b in Booking, where: b.parking_id == ^parking_id, select: count(b.id)) |> Repo.one
   end
 
 end

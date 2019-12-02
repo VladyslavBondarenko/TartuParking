@@ -1,6 +1,7 @@
 defmodule ParkingWeb.ParkingView do
   use ParkingWeb, :view
-  alias ParkingWeb.ParkingView
+  alias Parking.ParkingManager
+  alias ParkingWeb.{ParkingView}
 
   def render("index.json", %{parkings: parkings}) do
     %{parkings: render_many(parkings, ParkingView, "parking.json")}
@@ -13,6 +14,7 @@ defmodule ParkingWeb.ParkingView do
       capacity: parking.capacity,
       hourPayment: parking.zone.hourPayment,
       realTimePayment: parking.zone.realTimePayment,
-      freeFirstMinutes: parking.zone.freeFirstMinutes}
+      freeFirstMinutes: parking.zone.freeFirstMinutes,
+      emptySpaces: parking.capacity - ParkingManager.calc_busy_spaces(parking.id)}
   end
 end

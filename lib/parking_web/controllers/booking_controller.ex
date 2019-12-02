@@ -27,7 +27,7 @@ defmodule ParkingWeb.BookingController do
     case isAtParking do
       [] -> case Geolocation.getStreetByLocation(location) do
         nil -> %{ parkingType: "outOfParkingZone", parkingItem: nil }
-        streetName -> case StreetManager.get_street_zone_info(streetName) do
+        streetName -> case StreetManager.get_street_by_name(streetName) do
           nil -> %{ parkingType: "outOfParkingZone", parkingItem: nil }
           streetInfo ->  %{ parkingType: "street", parkingItem: streetInfo }
         end
@@ -42,7 +42,7 @@ defmodule ParkingWeb.BookingController do
     case isAtParking do
       [] -> case Geolocation.getStreetByLocation(location) do
         nil -> ZoneManager.get_zone_by_name("free")
-        streetName -> case StreetManager.get_street_zone_info(streetName) do
+        streetName -> case StreetManager.get_street_by_name(streetName) do
           nil -> ZoneManager.get_zone_by_name("free")
           streetInfo -> streetInfo.zone
         end
