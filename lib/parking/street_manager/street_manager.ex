@@ -3,7 +3,7 @@ defmodule Parking.StreetManager do
   import Ecto.Query, warn: false
   alias Parking.Repo
 
-  alias Parking.{Street, Zone, Booking}
+  alias Parking.{Street, Booking}
 
   def list_streets do
     Repo.all(Street) |> Repo.preload([:zone])

@@ -20,17 +20,17 @@ defmodule Parking.BookingManager do
 
   def create_booking(user_id, parkingInfo, attrs \\ %{}) do
     zone = case parkingInfo.parkingItem do
-      nil -> ZoneManager.get_zone_by_name("free")
+      nil         -> ZoneManager.get_zone_by_name("free")
       parkingItem -> parkingItem.zone
     end
     cost = calcCost(attrs["startDateTime"], attrs["endDateTime"], attrs["type"], zone)
     parking_id = case parkingInfo.parkingType do
       "parking" -> parkingInfo.parkingItem.id
-      _ -> nil
+      _         -> nil
     end
     street_id = case parkingInfo.parkingType do
       "street" -> parkingInfo.parkingItem.id
-      _ -> nil
+      _        -> nil
     end
     %Booking{user_id: user_id, parkingType: parkingInfo.parkingType, parking_id: parking_id, street_id: street_id, cost: cost}
     |> Booking.changeset(attrs)
@@ -38,7 +38,12 @@ defmodule Parking.BookingManager do
   end
 
   def update_booking(%Booking{} = booking, attrs) do
-    cost = calcCost(to_string(booking.startDateTime), attrs["endDateTime"], booking.type, booking.zone_id)
+    zone = case booking.parkingType do
+      "parking" -> booking.parking.zone
+      "street"  -> booking.street.zone
+      _         -> ZoneManager.get_zone_by_name("free")
+    end
+    cost = calcCost(to_string(booking.startDateTime), attrs["endDateTime"], booking.type, zone)
     booking
     |> Booking.changeset(%{cost: cost})
     |> Booking.changeset(attrs)
@@ -49,7 +54,7 @@ defmodule Parking.BookingManager do
     Repo.delete(booking)
   end
 
-  defp calcCost(start, finish, type, zone) do
+  def calcCost(start, finish, type, zone) do
     if (!is_nil(finish)) do
       {_,start,_} = DateTime.from_iso8601(start)
       {_,finish,_} = DateTime.from_iso8601(finish)
@@ -57,9 +62,9 @@ defmodule Parking.BookingManager do
       case payMin do
         x when x > 0 ->
           case type do
-            "hourly" -> zone.hourPayment * x / 60
+            "hourly"   -> zone.hourPayment * x / 60
             "realtime" -> zone.realTimePayment * x / 5
-            _ -> 0
+            _          -> 0
           end
         _ -> 0
       end
