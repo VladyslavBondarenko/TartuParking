@@ -10,4 +10,9 @@ defmodule ParkingWeb.StreetController do
     render(conn, "index.json", streets: streets)
   end
 
+  def show(conn, %{"id" => id}) do
+    street = StreetManager.get_street!(id)
+    render(conn, "street.json", street: street)
+  end
+
 end

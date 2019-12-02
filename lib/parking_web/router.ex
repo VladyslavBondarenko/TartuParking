@@ -42,6 +42,7 @@ defmodule ParkingWeb.Router do
     pipe_through [:api, :jwt_authenticated]
 
     get "/", StreetController, :index
+    get "/:id", StreetController, :show
   end
 
   scope "/api/bookings", ParkingWeb do
