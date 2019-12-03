@@ -5,6 +5,7 @@ defmodule Parking.Street do
   schema "streets" do
     field :name, :string
     field :capacity, :integer, default: 20
+    field :area, :string
     belongs_to :zone, Parking.Zone
 
     timestamps()
@@ -13,7 +14,7 @@ defmodule Parking.Street do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :capacity])
+    |> cast(attrs, [:name, :capacity, :area])
     |> validate_required([:name])
     |> unique_constraint(:name)
   end
