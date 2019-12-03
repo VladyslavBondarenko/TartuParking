@@ -15,6 +15,8 @@ defmodule ParkingWeb.ParkingView do
       hourPayment: parking.zone.hourPayment,
       realTimePayment: parking.zone.realTimePayment,
       freeFirstMinutes: parking.zone.freeFirstMinutes,
-      emptySpaces: parking.capacity - ParkingManager.calc_busy_spaces(parking.id)}
+      emptySpaces: parking.capacity - ParkingManager.calc_busy_spaces(parking.id),
+      area: parking.area |> String.split(" ") |> Enum.map(fn e -> e |> String.split(",") |> Enum.map(fn e -> e |> String.to_float() end) end)
+    }
   end
 end
