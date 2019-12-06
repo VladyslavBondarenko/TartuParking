@@ -9,7 +9,6 @@ defmodule Parking.Zone do
     field :freeFirstMinutes, :integer
     has_many :parkings, Parking.Parking
     has_many :streets, Parking.Street
-    has_many :bookings, Parking.Booking
 
     timestamps()
   end

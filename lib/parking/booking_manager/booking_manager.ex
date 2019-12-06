@@ -62,11 +62,11 @@ defmodule Parking.BookingManager do
       case payMin do
         x when x > 0 ->
           case type do
-            "hourly"   -> zone.hourPayment * x / 60
-            "realtime" -> zone.realTimePayment * x / 5
-            _          -> 0
+            "hourly"   -> zone.hourPayment * Float.ceil(x / 60)
+            "realtime" -> zone.realTimePayment * Float.ceil(x / 5)
+            _          -> 0.0
           end
-        _ -> 0
+        _ -> 0.0
       end
     else
       nil
