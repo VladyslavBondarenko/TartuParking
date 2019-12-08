@@ -28,28 +28,38 @@ defmodule ParkingWeb.Router do
   end
 
   scope "/api/parkings", ParkingWeb do
-    pipe_through [:api, :jwt_authenticated]
+    pipe_through [:api]
 
-    post "/", ParkingController, :create
     get "/", ParkingController, :index
     get "/nearest", ParkingController, :nearest
     get "/:id", ParkingController, :show
+  end
+
+  scope "/api/parkings", ParkingWeb do
+    pipe_through [:api, :jwt_authenticated]
+
+    post "/", ParkingController, :create
     put "/:id", ParkingController, :update
     delete "/:id", ParkingController, :delete
   end
 
   scope "/api/streets", ParkingWeb do
-    pipe_through [:api, :jwt_authenticated]
+    pipe_through [:api]
 
     get "/", StreetController, :index
     get "/:id", StreetController, :show
   end
 
   scope "/api/bookings", ParkingWeb do
+    pipe_through [:api]
+
+    get "/prices", BookingController, :prices
+  end
+
+  scope "/api/bookings", ParkingWeb do
     pipe_through [:api, :jwt_authenticated]
 
     get "/", BookingController, :index
-    get "/prices", BookingController, :prices
     get "/actual", BookingController, :actual
     post "/", BookingController, :create
     put "/:id", BookingController, :update
