@@ -1,7 +1,7 @@
 defmodule Parking.BookingManager do
 
   import Ecto.Query, warn: false
-  alias Parking.{Repo, Booking, ZoneManager}
+  alias Parking.{Repo, Booking, ZoneManager, UserManager}
 
   def list_bookings do
     Repo.all(Booking) |> Repo.preload([:zone])
@@ -32,6 +32,7 @@ defmodule Parking.BookingManager do
       "street" -> parkingInfo.parkingItem.id
       _        -> nil
     end
+    if !is_nil(cost) do UserManager.update_money(user_id, -cost) end
     %Booking{user_id: user_id, parkingType: parkingInfo.parkingType, parking_id: parking_id, street_id: street_id, cost: cost}
     |> Booking.changeset(attrs)
     |> Repo.insert()
@@ -44,6 +45,7 @@ defmodule Parking.BookingManager do
       _         -> ZoneManager.get_zone_by_name("free")
     end
     cost = calcCost(to_string(booking.startDateTime), attrs["endDateTime"], booking.type, zone)
+    if !is_nil(cost) do UserManager.update_money(booking.user_id, -cost) end
     booking
     |> Booking.changeset(%{cost: cost})
     |> Booking.changeset(attrs)
