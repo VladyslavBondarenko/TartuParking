@@ -38,6 +38,12 @@ defmodule ParkingWeb.UserController do
     end
   end
 
+  def updateMoney(conn, %{"id" => id, "value" => value}) do
+    with {:ok, %User{} = user} <- UserManager.update_money(id, value) do
+      render(conn, "user.json", user: user)
+    end
+  end
+
   def delete(conn, %{"id" => id}) do
     user = UserManager.get_user!(id)
 

@@ -24,6 +24,7 @@ defmodule ParkingWeb.Router do
     get "/", UserController, :index
     get "/:id", UserController, :show
     put "/:id", UserController, :update
+    put "/:id/money", UserController, :updateMoney
     delete "/:id", UserController, :delete
   end
 
