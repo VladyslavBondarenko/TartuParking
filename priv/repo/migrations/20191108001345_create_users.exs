@@ -6,6 +6,7 @@ defmodule Parking.Repo.Migrations.CreateUsers do
       add :full_name, :string, default: ""
       add :username, :string
       add :password, :string
+      add :money, :float
 
       timestamps()
     end

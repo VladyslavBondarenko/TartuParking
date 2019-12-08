@@ -6,6 +6,7 @@ defmodule Parking.User do
     field :full_name, :string, default: ""
     field :username, :string
     field :password, :string
+    field :money, :float, default: 0.0
     has_many :bookings, Parking.Booking
 
     timestamps()
@@ -14,7 +15,7 @@ defmodule Parking.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:full_name, :username, :password])
+    |> cast(attrs, [:full_name, :username, :password, :money])
     |> validate_required([:username, :password])
     |> unique_constraint(:username)
   end
