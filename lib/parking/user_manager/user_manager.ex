@@ -40,7 +40,8 @@ defmodule Parking.UserManager do
 
   def token_sign_in(username, password) do
     case username_password_auth(username, password) do
-      {:ok, user} -> Parking.Guardian.encode_and_sign(user)
+      {:ok, user} -> {:ok, token, _claims} = Parking.Guardian.encode_and_sign(user)
+                     {:ok, token, user}
       _           -> {:error, :unauthorized}
     end
   end

@@ -13,7 +13,7 @@ defmodule ParkingWeb.UserController do
 
   def login(conn, %{"username" => username, "password" => password}) do
     case UserManager.token_sign_in(username, password) do
-      {:ok, token, _claims} -> render conn, "jwt.json", jwt: token
+      {:ok, token, user} -> render conn, "jwt.json", jwt: token, user: user
       _ -> {:error, :unauthorized}
     end
   end
