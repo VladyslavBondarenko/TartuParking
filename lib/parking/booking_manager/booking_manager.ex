@@ -44,7 +44,10 @@ defmodule Parking.BookingManager do
       "street"  -> booking.street.zone
       _         -> ZoneManager.get_zone_by_name("free")
     end
-    cost = calcCost(to_string(booking.startDateTime), attrs["endDateTime"], booking.type, zone)
+    cost = case booking.type do
+      "hourly" -> calcCost(to_string(booking.endDateTime), attrs["endDateTime"], booking.type, zone)
+      "realtime" -> calcCost(to_string(booking.startDateTime), attrs["endDateTime"], booking.type, zone)
+    end
     if !is_nil(cost) do UserManager.update_money(booking.user_id, -cost) end
     booking
     |> Booking.changeset(%{cost: cost})

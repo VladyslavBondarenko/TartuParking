@@ -3,9 +3,9 @@ defmodule ParkingWeb.ParkingControllerTest do
 
   alias Parking.{ParkingManager, UserManager}
 
-  @create_attrs %{location: "58.387746,26.696940", timelimit: 0, zone_id: 3, area: "58.38811045707349,26.697406020617336 58.38760994822571,26.696209755396694 58.387022263039675,26.69730409667477 58.387601512622474,26.698371615862698"}
-  @update_attrs %{timelimit: 120}
-  @invalid_attrs %{location: nil}
+  # @create_attrs %{location: "58.387746,26.696940", timelimit: 0, zone_id: 3, area: "58.38811045707349,26.697406020617336 58.38760994822571,26.696209755396694 58.387022263039675,26.69730409667477 58.387601512622474,26.698371615862698"}
+  # @update_attrs %{timelimit: 120}
+  # @invalid_attrs %{location: nil}
 
   setup %{conn: conn} do
     {_, jwt, _} = UserManager.token_sign_in("ivan","123");
@@ -69,52 +69,52 @@ defmodule ParkingWeb.ParkingControllerTest do
     end
   end
 
-  describe "create parking" do
-    test "renders parking when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.parking_path(conn, :create), parking: @create_attrs)
-      assert %{"id" => id} = json_response(conn, 200)
-      conn = get(conn, Routes.parking_path(conn, :show, id))
-      assert %{
-              "id" => id,
-              "location" => "58.387746,26.696940",
-              "timelimit" => 0
-            } = json_response(conn, 200)
-    end
-    test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.parking_path(conn, :create), parking: @invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
-    end
-  end
+  # describe "create parking" do
+  #   test "renders parking when data is valid", %{conn: conn} do
+  #     conn = post(conn, Routes.parking_path(conn, :create), parking: @create_attrs)
+  #     assert %{"id" => id} = json_response(conn, 200)
+  #     conn = get(conn, Routes.parking_path(conn, :show, id))
+  #     assert %{
+  #             "id" => id,
+  #             "location" => "58.387746,26.696940",
+  #             "timelimit" => 0
+  #           } = json_response(conn, 200)
+  #   end
+  #   test "renders errors when data is invalid", %{conn: conn} do
+  #     conn = post(conn, Routes.parking_path(conn, :create), parking: @invalid_attrs)
+  #     assert json_response(conn, 422)["errors"] != %{}
+  #   end
+  # end
 
-  describe "update parking" do
-    test "renders parking when data is valid", %{conn: conn} do
-      parking_id = 1
-      conn = get(conn, Routes.parking_path(conn, :show, parking_id))
-      assert %{ "timelimit" => 0 } = json_response(conn, 200)
-      conn = put(conn, Routes.parking_path(conn, :update, parking_id), parking: @update_attrs)
-      conn = get(conn, Routes.parking_path(conn, :show, parking_id))
-      assert %{ "timelimit" => 120 } = json_response(conn, 200)
-    end
+  # describe "update parking" do
+  #   test "renders parking when data is valid", %{conn: conn} do
+  #     parking_id = 1
+  #     conn = get(conn, Routes.parking_path(conn, :show, parking_id))
+  #     assert %{ "timelimit" => 0 } = json_response(conn, 200)
+  #     conn = put(conn, Routes.parking_path(conn, :update, parking_id), parking: @update_attrs)
+  #     conn = get(conn, Routes.parking_path(conn, :show, parking_id))
+  #     assert %{ "timelimit" => 120 } = json_response(conn, 200)
+  #   end
 
-    test "renders errors when data is invalid", %{conn: conn} do
-      parking = ParkingManager.get_parking!(1)
-      conn = put(conn, Routes.parking_path(conn, :update, parking), parking: @invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
-    end
-  end
+  #   test "renders errors when data is invalid", %{conn: conn} do
+  #     parking = ParkingManager.get_parking!(1)
+  #     conn = put(conn, Routes.parking_path(conn, :update, parking), parking: @invalid_attrs)
+  #     assert json_response(conn, 422)["errors"] != %{}
+  #   end
+  # end
 
-  describe "delete parking" do
+  # describe "delete parking" do
 
-    test "deletes chosen parking", %{conn: conn} do
-      parking = ParkingManager.get_parking!(1)
-      conn = delete(conn, Routes.parking_path(conn, :delete, parking))
-      assert response(conn, 204)
+  #   test "deletes chosen parking", %{conn: conn} do
+  #     parking = ParkingManager.get_parking!(1)
+  #     conn = delete(conn, Routes.parking_path(conn, :delete, parking))
+  #     assert response(conn, 204)
 
-      assert_error_sent 404, fn ->
-        get(conn, Routes.parking_path(conn, :show, parking))
-      end
-    end
-  end
+  #     assert_error_sent 404, fn ->
+  #       get(conn, Routes.parking_path(conn, :show, parking))
+  #     end
+  #   end
+  # end
 
   describe "find nearest parking" do
 

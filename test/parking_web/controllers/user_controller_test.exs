@@ -2,18 +2,18 @@ defmodule ParkingWeb.UserControllerTest do
   use ParkingWeb.ConnCase
 
   alias Parking.UserManager
-  alias Parking.User
+  # alias Parking.User
 
   @create_attrs %{
     full_name: "some username",
     username: "some username",
     password: "some password"
   }
-  @update_attrs %{
-    full_name: "some updated username",
-    username: "some updated username",
-    password: "some updated password"
-  }
+  # @update_attrs %{
+  #   full_name: "some updated username",
+  #   username: "some updated username",
+  #   password: "some updated password"
+  # }
   @invalid_attrs %{password: nil, username: nil}
 
   @booking_hourly_attrs %{
@@ -21,6 +21,9 @@ defmodule ParkingWeb.UserControllerTest do
     endDateTime: "2019-11-21T22:52:29.360Z",
     location: "58.379990,26.719745",
     type: "hourly"
+  }
+  @booking_hourly_extending_attrs %{
+    endDateTime: "2019-11-21T23:50:29.360Z",
   }
   @booking_realtime_start_attrs %{
     startDateTime: "2019-11-21T12:52:29.360Z",
@@ -64,77 +67,107 @@ defmodule ParkingWeb.UserControllerTest do
     end
   end
 
-  describe "update user" do
-    setup [:create_user]
-
-    test "renders user when data is valid", %{conn: conn, user: %User{id: id}} do
-      conn = put(conn, Routes.user_path(conn, :update, id), user: @update_attrs)
-      assert %{"id" => ^id} = json_response(conn, 200)
-      conn = get(conn, Routes.user_path(conn, :show, id))
-      assert %{"full_name" => "some updated username", "id" => id, "username" => "some updated username"} = json_response(conn, 200)
+  describe "show user" do
+    test "renders user when data is valid", %{conn: conn} do
+      conn = get(conn, Routes.user_path(conn, :show, 1))
+      assert %{
+        "full_name" => "",
+        "money" => 0.0,
+        "username" => "ivan"
+      } = json_response(conn, 200)
     end
 
-    test "renders errors when data is invalid", %{conn: conn, user: user} do
-      conn = put(conn, Routes.user_path(conn, :update, user), user: @invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
-    end
-  end
-
-  describe "delete user" do
-    setup [:create_user]
-
-    test "deletes chosen user", %{conn: conn, user: user} do
-      conn = delete(conn, Routes.user_path(conn, :delete, user))
-      assert response(conn, 204)
-
-      assert_error_sent 404, fn ->
-        get(conn, Routes.user_path(conn, :show, user))
-      end
+    test "unauthorized error when not current user id is queried", %{conn: conn} do
+      conn = get(conn, Routes.user_path(conn, :show, 2))
+      assert json_response(conn, 401) == %{"error" => "unauthorized"}
     end
   end
+
+  # describe "update user" do
+  #   setup [:create_user]
+
+  #   test "renders user when data is valid", %{conn: conn, user: %User{id: id}} do
+  #     conn = put(conn, Routes.user_path(conn, :update, id), user: @update_attrs)
+  #     assert %{"id" => ^id} = json_response(conn, 200)
+  #     conn = get(conn, Routes.user_path(conn, :show, id))
+  #     assert %{"full_name" => "some updated username", "id" => id, "username" => "some updated username"} = json_response(conn, 200)
+  #   end
+
+  #   test "renders errors when data is invalid", %{conn: conn, user: user} do
+  #     conn = put(conn, Routes.user_path(conn, :update, user), user: @invalid_attrs)
+  #     assert json_response(conn, 422)["errors"] != %{}
+  #   end
+  # end
+
+  # describe "delete user" do
+  #   setup [:create_user]
+
+  #   test "deletes chosen user", %{conn: conn, user: user} do
+  #     conn = delete(conn, Routes.user_path(conn, :delete, user))
+  #     assert response(conn, 204)
+
+  #     assert_error_sent 404, fn ->
+  #       get(conn, Routes.user_path(conn, :show, user))
+  #     end
+  #   end
+  # end
 
   describe "update user money" do
-    setup [:create_user]
 
-    test "increase value", %{conn: conn, user: user} do
-      assert user.money == 0.0
-      conn = put(conn, Routes.user_path(conn, :updateMoney, user.id), value: 100)
+    test "increase value", %{conn: conn} do
+      id = 1
+      assert UserManager.get_user!(id).money == 0.0
+      conn = put(conn, Routes.user_path(conn, :updateMoney, id), value: 100)
       assert %{"money" => 100.0} = json_response(conn, 200)
-      user = UserManager.get_user!(user.id)
-      assert user.money == 100.0
+      assert UserManager.get_user!(id).money == 100.0
     end
 
-    test "decrease value", %{conn: conn, user: user} do
-      assert user.money == 0.0
-      conn = put(conn, Routes.user_path(conn, :updateMoney, user.id), value: -5.5)
+    test "decrease value", %{conn: conn} do
+      id = 1
+      assert UserManager.get_user!(id).money == 0.0
+      conn = put(conn, Routes.user_path(conn, :updateMoney, id), value: -5.5)
       assert %{"money" => -5.5} = json_response(conn, 200)
-      user = UserManager.get_user!(user.id)
-      assert user.money == -5.5
+      assert UserManager.get_user!(id).money == -5.5
     end
 
-    test "decreased after creating hourly booking", %{conn: conn, user: user} do
-      assert user.money == 0.0
+    test "decreased after creating hourly booking", %{conn: conn} do
+      id = 1
+      assert UserManager.get_user!(id).money == 0.0
       conn = post(conn, Routes.booking_path(conn, :create), booking: @booking_hourly_attrs)
       assert %{"cost" => 20.0} = json_response(conn, 200)
-      user = UserManager.get_user!(conn.private.guardian_default_resource.id)
-      assert user.money == -20.0
+      assert UserManager.get_user!(id).money == -20.0
     end
 
-    test "decreased after end realtime booking", %{conn: conn, user: user} do
+    test "decreased after creating and extending hourly booking", %{conn: conn} do
+      id = 1
+      user = UserManager.get_user!(id)
+      assert user.money == 0.0
+      conn = post(conn, Routes.booking_path(conn, :create), booking: @booking_hourly_attrs)
+      booking_id = json_response(conn, 200)["id"]
+      assert %{"cost" => 20.0} = json_response(conn, 200)
+      assert UserManager.get_user!(id).money == -20.0
+      conn = put(conn, Routes.booking_path(conn, :update, booking_id), booking: @booking_hourly_extending_attrs)
+      assert %{"cost" => 2.0} = json_response(conn, 200)
+      assert UserManager.get_user!(id).money == -22.0
+    end
+
+    test "decreased after end realtime booking", %{conn: conn} do
+      id = 1
+      user = UserManager.get_user!(id)
       assert user.money == 0.0
       conn = post(conn, Routes.booking_path(conn, :create), booking: @booking_realtime_start_attrs)
       booking_id = json_response(conn, 200)["id"]
       assert %{"cost" => nil} = json_response(conn, 200)
-      assert UserManager.get_user!(conn.private.guardian_default_resource.id).money == 0.0
+      assert UserManager.get_user!(id).money == 0.0
       conn = put(conn, Routes.booking_path(conn, :update, booking_id), booking: @booking_realtime_end_attrs)
       assert %{"cost" => 19.2} = json_response(conn, 200)
-      assert UserManager.get_user!(conn.private.guardian_default_resource.id).money == -19.2
+      assert UserManager.get_user!(id).money == -19.2
     end
 
   end
 
-  defp create_user(_) do
-    user = fixture(:user)
-    {:ok, user: user}
-  end
+  # defp create_user(_) do
+  #   user = fixture(:user)
+  #   {:ok, user: user}
+  # end
 end
