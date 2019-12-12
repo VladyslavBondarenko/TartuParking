@@ -23,9 +23,9 @@ defmodule ParkingWeb.Router do
 
     get "/", UserController, :index
     get "/:id", UserController, :show
-    put "/:id", UserController, :update
+    # put "/:id", UserController, :update
     put "/:id/money", UserController, :updateMoney
-    delete "/:id", UserController, :delete
+    # delete "/:id", UserController, :delete
   end
 
   scope "/api/parkings", ParkingWeb do
@@ -36,13 +36,13 @@ defmodule ParkingWeb.Router do
     get "/:id", ParkingController, :show
   end
 
-  scope "/api/parkings", ParkingWeb do
-    pipe_through [:api, :jwt_authenticated]
+  # scope "/api/parkings", ParkingWeb do
+  #   pipe_through [:api, :jwt_authenticated]
 
-    post "/", ParkingController, :create
-    put "/:id", ParkingController, :update
-    delete "/:id", ParkingController, :delete
-  end
+  #   post "/", ParkingController, :create
+  #   put "/:id", ParkingController, :update
+  #   delete "/:id", ParkingController, :delete
+  # end
 
   scope "/api/streets", ParkingWeb do
     pipe_through [:api]

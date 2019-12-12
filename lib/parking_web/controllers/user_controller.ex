@@ -26,8 +26,15 @@ defmodule ParkingWeb.UserController do
   end
 
   def show(conn, %{"id" => id}) do
-    user = UserManager.get_user!(id)
-    render(conn, "user.json", user: user)
+    currentId = Guardian.Plug.current_resource(conn).id
+    if (id |> String.to_integer() === currentId) do
+      user = UserManager.get_user!(id)
+      render(conn, "user.json", user: user)
+    else
+      conn
+      |> put_status(:unauthorized)
+      |> json(%{error: "unauthorized"})
+    end
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
@@ -39,8 +46,15 @@ defmodule ParkingWeb.UserController do
   end
 
   def updateMoney(conn, %{"id" => id, "value" => value}) do
-    with {:ok, %User{} = user} <- UserManager.update_money(id, value) do
-      render(conn, "user.json", user: user)
+    currentId = Guardian.Plug.current_resource(conn).id
+    if (id |> String.to_integer() === currentId) do
+      with {:ok, %User{} = user} <- UserManager.update_money(id, value) do
+        render(conn, "user.json", user: user)
+      end
+    else
+      conn
+      |> put_status(:unauthorized)
+      |> json(%{error: "unauthorized"})
     end
   end
 
