@@ -147,7 +147,7 @@ defmodule ParkingWeb.UserControllerTest do
       assert %{"cost" => 20.0} = json_response(conn, 200)
       assert UserManager.get_user!(id).money == -20.0
       conn = put(conn, Routes.booking_path(conn, :update, booking_id), booking: @booking_hourly_extending_attrs)
-      assert %{"cost" => 2.0} = json_response(conn, 200)
+      assert %{"cost" => 22.0} = json_response(conn, 200)
       assert UserManager.get_user!(id).money == -22.0
     end
 
